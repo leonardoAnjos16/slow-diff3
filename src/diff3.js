@@ -10,7 +10,7 @@ export const getChunks = (Ma, Mb, aLength, oLength, bLength) => {
       i++
     }
 
-    if (la + i > aLength || lo + i > oLength || lb + i > bLength) {
+    if (la + i > aLength && lo + i > oLength && lb + i > bLength) {
       lastIsStable = true
       break
     }
