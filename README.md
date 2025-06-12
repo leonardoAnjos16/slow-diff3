@@ -31,3 +31,14 @@ You can run the program in this mode by providing an additional `-m` (or `--merg
 ```bash
 node src/index.js leftPath basePath rightPath -m
 ```
+
+## Options
+
+You can see the full list of options by running the program with the `-h` option:
+
+```bash
+node src/index.js -h
+```
+
+One option that you may find useful is the `-d` (`--debug`) one. It will output useful info for debugging merges/computed chunks.
+Right now, it only outputs the computed matchings between left and base and base and right revisions, in the same manner chunks are printed.

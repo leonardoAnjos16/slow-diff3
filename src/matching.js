@@ -10,63 +10,56 @@ export const match = (a, b) => {
 }
 
 // Experimental, for debug purposes
-export const getChanges = (a, b) => {
+export const prettryPrintMatching = (a, b, aLabel, bLabel) => {
   const subsequence = lcs(a, b)
-  const aLength = a.length, bLength = b.length
+  if (subsequence.length === 0) {
+    console.log(`No matching between ${aLabel} and ${bLabel}`)
+    return
+  }
 
   const changes = []
-  let al = 0, ar = 0, bl = 0, br = 0
+  let sIndex = 0, ar = 0, br = 0
 
-  for (let i = 0; i < subsequence.length; i++) {
-    const [aIndex, bIndex] = subsequence[i] 
-    if (aIndex == ar && bIndex == br) {
-      ar++
-      br++
-    } else if (aIndex == ar) {
-      if (ar > al && br > bl) {
-        changes.push([[al, ar - 1], [bl, br - 1]])
-        al = ar++
-      }
-
-      changes.push([[-1, -1], [br, bIndex - 1]])
-      bl = bIndex
-      br = bIndex + 1
-    } else if (bIndex == br) {
-      if (ar > al && br > bl) {
-        changes.push([[al, ar - 1], [bl, br - 1]])
-        bl = br++
-      }
-
+  while (sIndex < subsequence.length) {
+    const [aIndex, bIndex] = subsequence[sIndex]
+    if (ar !== aIndex) {
       changes.push([[ar, aIndex - 1], [-1, -1]])
-      al = aIndex
-      ar = aIndex + 1
-    } else {
-      if (ar > al && br > bl) {
-        changes.push([[al, ar - 1], [bl, br - 1]])
-      }
-
-      changes.push([[ar, aIndex - 1], [-1, -1]])
-      changes.push([[-1, -1], [br, bIndex - 1]])
-
-      al = aIndex
-      ar = aIndex + 1
-
-      bl = bIndex
-      br = bIndex + 1
     }
+
+    if (br !== bIndex) {
+      changes.push([[-1, -1], [br, bIndex - 1]])
+    }
+
+    while (sIndex + 1 < subsequence.length && consecutiveChanges(subsequence[sIndex], subsequence[sIndex + 1])) {
+      sIndex++
+    }
+
+    const [aNewR, bNewR] = subsequence[sIndex]
+    changes.push([[aIndex, aNewR], [bIndex, bNewR]])
+
+    ar = aNewR + 1
+    br = bNewR + 1
+    sIndex++
   }
 
-  if (ar > al && br > bl) {
-    changes.push([[al, ar - 1], [bl, br - 1]])
-  }
+  const aLength = a.length
+  const bLength = b.length
 
-  if (ar < aLength) {
+  if (ar !== aLength) {
     changes.push([[ar, aLength - 1], [-1, -1]])
   }
 
-  if (br < bLength) {
+  if (br !== bLength) {
     changes.push([[-1, -1], [br, bLength - 1]])
   }
 
-  return changes.map(([[al, ar], [bl, br]]) => [[al + 1, ar + 1], [bl + 1, br + 1]])
+  console.log(`${aLabel}-${bLabel} matching:`)
+  changes.forEach(([[al, ar], [bl, br]]) => {
+    const aRange = al != -1 && ar != -1 ? `${al + 1}-${ar + 1}` : '-'
+    const bRange = bl != -1 && br != -1 ? `${bl + 1}-${br + 1}` : '-'
+
+    console.log(`${aRange}\t(${aLabel})\t|\t${bRange}\t(${bLabel})`)
+  })
 }
+
+const consecutiveChanges = ([ai, bi], [aj, bj]) => aj == ai + 1 && bj == bi + 1
