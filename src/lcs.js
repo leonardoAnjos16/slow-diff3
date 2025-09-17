@@ -14,9 +14,9 @@ export const lcs = (a, b) => {
     if (memo[i][j] != NO_ANSWER) return memo[i][j]
 
     let ans = NO_ANSWER
-    if (a[i] == b[j]) {
-      ans = _lcs(i + 1, j + 1) + 1
-      bestAction[i][j] = SKIP_IJ
+    if (ans == NO_ANSWER || _lcs(i, j + 1) > ans) {
+      ans = _lcs(i, j + 1)
+      bestAction[i][j] = SKIP_J
     }
 
     if (ans == NO_ANSWER || _lcs(i + 1, j) > ans) {
@@ -24,9 +24,9 @@ export const lcs = (a, b) => {
       bestAction[i][j] = SKIP_I
     }
 
-    if (ans == NO_ANSWER || _lcs(i, j + 1) > ans) {
-      ans = _lcs(i, j + 1)
-      bestAction[i][j] = SKIP_J
+    if (a[i] == b[j] && (ans == NO_ANSWER || _lcs(i + 1, j + 1) + 1 > ans)) {
+      ans = _lcs(i + 1, j + 1) + 1
+      bestAction[i][j] = SKIP_IJ
     }
 
     memo[i][j] = ans
